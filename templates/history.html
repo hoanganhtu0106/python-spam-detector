@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <h1>📧 Spam Classifier</h1>
+            <div class="nav-links">
+                <a href="/">Classify</a>
+                <a href="/history" class="active">History</a>
+            </div>
+        </nav>
+
+        <div class="content">
+            <h2>Classification History</h2>
+            
+            {% if history %}
+            <div class="history-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Message</th>
+                            <th>Result</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history|reverse %}
+                        <tr>
+                            <td>{{ loop.revindex }}</td>
+                            <td class="message-cell">
+                                <span class="message-preview">{{ item.message[:60] }}{% if item.message|length > 60 %}...{% endif %}</span>
+                                <span class="message-full" style="display:none;">{{ item.message }}</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ 'spam' if item.result == 'Spam' else 'ham' }}">
+                                    {{ item.result }}
+                                </span>
+                            </td>
+                            <td>{{ item.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form method="post" action="/clear-history">
+                    <button type="submit" class="btn btn-danger">Clear History</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="no-history">No classification history yet. Start by <a href="/">classifying messages</a>!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.message-preview').forEach(preview => {
+            preview.addEventListener('click', function() {
+                const full = this.nextElementSibling;
+                full.style.display = full.style.display === 'none' ? 'inline' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

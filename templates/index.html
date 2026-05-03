@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <h1>📧 Spam Classifier</h1>
+            <div class="nav-links">
+                <a href="/" class="active">Classify</a>
+                <a href="/history">History</a>
+            </div>
+        </nav>
+
+        <div class="content">
+            <h2>Classify Email Messages</h2>
+            
+            <!-- Text Input -->
+            <div class="form-section">
+                <h3>Option 1: Enter Text</h3>
+                <form method="post" id="textForm">
+                    <textarea name="message" placeholder="Enter your email message here..." required></textarea>
+                    <button type="submit" class="btn btn-primary">Classify Message</button>
+                </form>
+            </div>
+
+            <!-- File Upload -->
+            <div class="form-section">
+                <h3>Option 2: Upload File</h3>
+                <form method="post" enctype="multipart/form-data" id="fileForm">
+                    <div class="file-input-wrapper">
+                        <input type="file" name="file" accept=".txt,.csv" id="fileInput">
+                        <label for="fileInput" class="file-label">Choose a file (TXT or CSV)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="action" value="upload">Upload & Classify</button>
+                </form>
+            </div>
+
+            <!-- Result Display -->
+            {% if result %}
+            <div class="result">
+                <h3>Classification Result</h3>
+                <div class="result-box result-{{ 'spam' if result == 'Spam' else 'ham' }}">
+                    <strong>{{ result }}</strong>
+                </div>
+                {% if message_display %}
+                <p class="message-display"><strong>Message:</strong> {{ message_display[:100] }}{% if message_display|length > 100 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
