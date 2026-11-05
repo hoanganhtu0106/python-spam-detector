@@ -3,6 +3,7 @@ from collections import defaultdict, Counter
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from data_preprocessing import load_and_prepare_data
 import pickle
+import sys
 
 class NaiveBayesClassifier:
     def __init__(self):
@@ -42,11 +43,16 @@ class NaiveBayesClassifier:
         return max(scores, key=scores.get)
 
     def save_model(self, filename='model.pkl'):
+        sys.modules.setdefault('naive_bayes', sys.modules[__name__])
+        self.__class__.__module__ = 'naive_bayes'
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
     @staticmethod
     def load_model(filename='model.pkl'):
+        module = sys.modules.get('naive_bayes')
+        if module is not None:
+            sys.modules['__main__'] = module
         with open(filename, 'rb') as f:
             return pickle.load(f)
     def __init__(self):

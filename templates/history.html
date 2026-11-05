@@ -18,9 +18,23 @@
 
         <div class="content">
             <h2>Classification History</h2>
-            
+
+            {% if retrain_message %}
+            <div class="success-message">{{ retrain_message }}</div>
+            {% endif %}
+
             {% if history %}
             <div class="history-container">
+                <div class="history-actions">
+                    <a href="{{ url_for('export_history') }}" class="btn btn-primary btn-small">Export CSV</a>
+                    <form method="post" action="{{ url_for('retrain') }}">
+                        <button type="submit" class="btn btn-secondary btn-small">Retrain model</button>
+                    </form>
+                    <form method="post" action="/clear-history">
+                        <button type="submit" class="btn btn-danger btn-small">Clear History</button>
+                    </form>
+                </div>
+
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -31,9 +45,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in history|reverse %}
+                        {% for item in history %}
                         <tr>
-                            <td>{{ loop.revindex }}</td>
+                            <td>{{ loop.index }}</td>
                             <td class="message-cell">
                                 <span class="message-preview">{{ item.message[:60] }}{% if item.message|length > 60 %}...{% endif %}</span>
                                 <span class="message-full" style="display:none;">{{ item.message }}</span>
@@ -48,9 +62,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <form method="post" action="/clear-history">
-                    <button type="submit" class="btn btn-danger">Clear History</button>
-                </form>
             </div>
             {% else %}
             <p class="no-history">No classification history yet. Start by <a href="/">classifying messages</a>!</p>

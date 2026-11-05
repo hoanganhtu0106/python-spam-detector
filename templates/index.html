@@ -18,7 +18,13 @@
 
         <div class="content">
             <h2>Classify Email Messages</h2>
-            
+
+            <div class="toolbar-inline">
+                <form method="post" action="{{ url_for('retrain') }}">
+                    <button type="submit" class="btn btn-secondary">Retrain model with feedback</button>
+                </form>
+            </div>
+
             <!-- Text Input -->
             <div class="form-section">
                 <h3>Option 1: Enter Text</h3>
@@ -47,8 +53,39 @@
                 <div class="result-box result-{{ 'spam' if result == 'Spam' else 'ham' }}">
                     <strong>{{ result }}</strong>
                 </div>
+                {% if confidence is not none %}
+                <p class="confidence">Confidence: {{ (confidence * 100)|round(2) }}%</p>
+                {% endif %}
                 {% if message_display %}
                 <p class="message-display"><strong>Message:</strong> {{ message_display[:100] }}{% if message_display|length > 100 %}...{% endif %}</p>
+                {% endif %}
+
+                {% if result == 'Spam' or result == 'Ham' %}
+                <div class="feedback-box">
+                    <h4>Feedback</h4>
+                    <div class="feedback-actions">
+                        <form method="post" action="{{ url_for('feedback') }}">
+                            <input type="hidden" name="message" value="{{ message_display }}">
+                            <input type="hidden" name="predicted_result" value="{{ result }}">
+                            <input type="hidden" name="actual_label" value="correct">
+                            <button type="submit" class="btn btn-small btn-success">Correct</button>
+                        </form>
+
+                        <form method="post" action="{{ url_for('feedback') }}">
+                            <input type="hidden" name="message" value="{{ message_display }}">
+                            <input type="hidden" name="predicted_result" value="{{ result }}">
+                            <input type="hidden" name="actual_label" value="Ham">
+                            <button type="submit" class="btn btn-small btn-secondary">Mark as Ham</button>
+                        </form>
+
+                        <form method="post" action="{{ url_for('feedback') }}">
+                            <input type="hidden" name="message" value="{{ message_display }}">
+                            <input type="hidden" name="predicted_result" value="{{ result }}">
+                            <input type="hidden" name="actual_label" value="Spam">
+                            <button type="submit" class="btn btn-small btn-warning">Mark as Spam</button>
+                        </form>
+                    </div>
+                </div>
                 {% endif %}
             </div>
             {% endif %}
